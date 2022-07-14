@@ -14,7 +14,7 @@ const getLinks = (arrayOfFiles) =>{
       if (line.match(regex)){
         arrLinks.push({
           href: line.match(regex).toString(),
-          text: line.match(regText).toString().substring(1, line.match(regText).toString().length - 1),
+          text: line.match(regText)?line.match(regText).toString().substring(1, line.match(regText).toString().length - 1):'ERROR: unsupported text format',
           line: i+1,
           file: file
         }); 
@@ -24,26 +24,32 @@ const getLinks = (arrayOfFiles) =>{
   return arrLinks
 }
 
-const getAllFiles = (dirPath, arrayOfFiles)=> {
-  if (fs.statSync(dirPath).isDirectory()){
-    files = fs.readdirSync(dirPath);
-    arrayOfFiles = arrayOfFiles || [];
-    files.forEach((file)=> {
-      if (path.extname(file)===''&&!file.startsWith('.')) {
-         getAllFiles(dirPath + "/" + file, arrayOfFiles);
-      } else {
-        if (path.extname(file)==='.md'){
-          arrayOfFiles.push(dirPath + "/" + file)
-        }
+const getAll = (dirPath)=> {
+  return new Promise ((resolve) => {
+    if (fs.statSync(dirPath).isDirectory()){
+      const getAllFiles = (dirPath, arrayOfFiles)=>{
+          files = fs.readdirSync(dirPath);
+          arrayOfFiles = arrayOfFiles || [];
+          files.forEach((file)=> {
+            if (path.extname(file)===''&&!file.startsWith('.')) {
+              getAllFiles(dirPath + "/" + file, arrayOfFiles);
+            } else {
+              if (path.extname(file)==='.md'){
+                arrayOfFiles.push(dirPath + "/" + file)
+              }
+            }
+          })
+          const links = getLinks(arrayOfFiles);
+          return links
       }
-    })
-    const links = getLinks(arrayOfFiles);
-    return links;
-  }else{
-    const links = getLinks([dirPath]);
-    return links;
-  }
+      resolve(getAllFiles(dirPath))
+    }else{
+      const links = getLinks([dirPath]);
+      resolve(links)
+    }
+  })
 }
+
 
 //validate true
 const validate = (arrLinks)=>{
@@ -77,35 +83,35 @@ const validate = (arrLinks)=>{
   return Promise.all(result)
 }
 
+
 const stats =(arrLinks)=>{
-  let broken = 0;
-  let unsupported = 0;
   let uniqueArr = [];
   const result = validate(arrLinks).then(data=>{
+    let result = {
+      Total: arrLinks.length,
+      Unique: 0,
+      Broken: {},
+      Unsupported:{}
+    }
     data.forEach((objectLink)=>{
       if(!uniqueArr.includes(objectLink.href)){
         uniqueArr.push(objectLink.href)
+        result.Unique += 1
       }  
       if(objectLink.statusText!='OK' && !objectLink.error){
-        broken++;
+        result.Broken[objectLink.statusText] = (result.Broken[objectLink.statusText] || 0) + 1;
       }
       if(objectLink.error){
-        unsupported++;
+        result.Unsupported[objectLink.error] = (result.Unsupported[objectLink.error] || 0) + 1;
       }
     })
-    let result = {
-      Total: arrLinks.length,
-      Unique: uniqueArr.length,
-      Broken: broken,
-      Unsupported: unsupported
-    }
     return result
   })
   return result
 }
 
 module.exports = {
-  getAllFiles,
+  getAll,
   validate,
   stats
 };
@@ -123,3 +129,5 @@ module.exports = {
   }}) */
 /* module.exports = () => {
 }; */
+
+//'C:/Users/trini/OneDrive/Escritorio/Proyectos-laboratoria/SCL020-md-links/file.md'

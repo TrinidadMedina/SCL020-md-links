@@ -1,21 +1,24 @@
+const chalk = require("chalk");
+const path = require('path');
 const {
-  getAllFiles,
+  getAll,
   validate,
   stats
 } = require("./md-links.js");
 
-const mdLinks = (path, option) =>{
-  const files = getAllFiles(path);
-  if (option.validate === true){
-    return validate(files)
-  }else if(option.stats===true){
-    return stats(files)
-  }else{
-    return new Promise (resolve=>{
-      resolve(files)
-    })
-  }
+const mdLinks = (dirPath, option) =>{
+  getAll(dirPath).then(data=>{
+    dirPath = path.isAbsolute(dirPath)?dirPath:path.resolve(dirPath);
+      if (option.validate === true){
+        return validate(data).then(console.log).catch(console.log)
+      }else if(option.stats === true){
+        return stats(data).then(console.log).catch(console.log)
+      }else{
+        return console.log(data)
+      } 
+    }).catch(error=>{console.log(chalk.red(error.message))})
 }
+
 module.exports = {
   mdLinks
 };

@@ -1,26 +1,38 @@
+#!/usr/bin/env node
 const { mdLinks } = require("./index.js");
-
-const dirPath = process.argv[2];
-const option = process.argv[3];
-const options2 = process.argv[4];
+const chalk = require('chalk')
 
 const cli = () =>{
+    let dirPath = process.argv[2];
+    const option = process.argv[3];
     let options = {
         stats: false,
         validate: false, 
     }; 
     if (option==='--stats'){
         options.stats = true;
+        console.log(chalk.bgMagenta('Links stats:'))
+        return mdLinks(dirPath,options);
     }else if (option==='--validate'){
         options.validate = true;
-    }else if(option==='--stats'&&options2==='--validate'){
-        options.stats = true;
-        options.validate = true;
+        console.log(chalk.bgMagenta('Links status:'))
+        return mdLinks(dirPath,options);
+    }else if(option){
+        return console.log(
+        `${chalk.red('wrong command')} 
+try again with: 
+${chalk.grey('md-links <path-to-file>')} 
+${chalk.grey('md-links <path-to-file> --stats')}   
+${chalk.grey('md-links <path-to-file> --validate')}`);
     }else{
-        console.log('this comand is wrong, try again')
+        if(dirPath!=undefined){
+            console.log(chalk.bgMagenta('Links in files.md:'))
+        }
+        return mdLinks(dirPath,options);
     }
-    const result = mdLinks(dirPath,options);
-    return result;
 }
+cli()
+//console.log(cli())
+//cli().then(console.log)
 
-cli().then(console.log);
+

@@ -31,12 +31,12 @@ ${chalk.grey('md-links <path-to-file> --validate')}`);
         if(dirPath!=undefined){
             console.log(chalk.bgMagenta('Links in files.md:'))
         }
-        return mdLinks(dirPath,options).then(console.log);
+        return mdLinks(dirPath,options);
     }
 }
 
 //cli()
 //console.log(cli())
-cli().then(console.log)
+cli().then(console.log).catch(error=>{console.log(chalk.red(error.message))})
 
 

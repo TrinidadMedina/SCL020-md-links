@@ -18,7 +18,7 @@ const mdLinks = async (dirPath, option) =>{
       }else{
         return data
       } 
-    }).catch(error=>{console.log(chalk.red(error.message))})
+    })
 }
 
 module.exports = {

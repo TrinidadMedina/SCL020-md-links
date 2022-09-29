@@ -6,15 +6,17 @@ const {
   stats
 } = require("./md-links.js");
 
-const mdLinks = (dirPath, option) =>{
-  getAll(dirPath).then(data=>{
+const mdLinks = async (dirPath, option) =>{
+   return getAll(dirPath).then(data=>{
     dirPath = path.isAbsolute(dirPath)?dirPath:path.resolve(dirPath);
       if (option.validate === true){
-        return validate(data).then(console.log).catch(console.log)
+        return validate(data).then(response=>{
+          return response})
       }else if(option.stats === true){
-        return stats(data).then(console.log).catch(console.log)
+        return stats(data).then(response=>{
+          return response})
       }else{
-        return console.log(data)
+        return data
       } 
     }).catch(error=>{console.log(chalk.red(error.message))})
 }

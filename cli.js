@@ -9,14 +9,17 @@ const cli = () =>{
         stats: false,
         validate: false, 
     }; 
+
     if (option==='--stats'){
         options.stats = true;
         console.log(chalk.bgMagenta('Links stats:'))
         return mdLinks(dirPath,options);
+
     }else if (option==='--validate'){
         options.validate = true;
         console.log(chalk.bgMagenta('Links status:'))
         return mdLinks(dirPath,options);
+
     }else if(option){
         return console.log(
         `${chalk.red('wrong command')} 
@@ -28,11 +31,12 @@ ${chalk.grey('md-links <path-to-file> --validate')}`);
         if(dirPath!=undefined){
             console.log(chalk.bgMagenta('Links in files.md:'))
         }
-        return mdLinks(dirPath,options);
+        return mdLinks(dirPath,options).then(console.log);
     }
 }
-cli()
+
+//cli()
 //console.log(cli())
-//cli().then(console.log)
+cli().then(console.log)
 
 

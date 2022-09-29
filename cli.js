@@ -8,6 +8,7 @@ const cli = () =>{
     let options = {
         stats: false,
         validate: false, 
+        invalid: false
     }; 
 
     if (option==='--stats'){
@@ -21,12 +22,10 @@ const cli = () =>{
         return mdLinks(dirPath,options);
 
     }else if(option){
-        return console.log(
-        `${chalk.red('wrong command')} 
-try again with: 
-${chalk.grey('md-links <path-to-file>')} 
-${chalk.grey('md-links <path-to-file> --stats')}   
-${chalk.grey('md-links <path-to-file> --validate')}`);
+        console.log(chalk.red('wrong command'))
+        options.invalid = true;
+        return mdLinks(dirPath,options);
+       
     }else{
         if(dirPath!=undefined){
             console.log(chalk.bgMagenta('Links in files.md:'))
